@@ -20,7 +20,9 @@
                  [com.taoensso/timbre "4.7.4"]
                  [org.clojure/tools.cli "0.3.5"]
                  [com.cemerick/friend "0.2.3"]
+                 [instaparse "1.4.8"]
                  [watt "0.1.0-SNAPSHOT"]
+                 [clojure-websocket "0.2.1-SNAPSHOT"]
                  [org.flatland/protobuf "0.8.1"]]
   :plugins [[lein-ring "0.9.3"]]
   :ring {:handler hsbox.handler/app}

@@ -8,6 +8,7 @@
             [hsbox.launch :as launch]
             [hsbox.version :as version]
             [hsbox.steamapi :as steamapi]
+            [hsbox.movie :as movie]
             [ring.middleware.not-modified :refer [wrap-not-modified]]
             [ring.middleware.cors :refer [wrap-cors]]
             [ring.middleware.json :refer [wrap-json-body
@@ -70,6 +71,9 @@
            (context "/player/:steamid" [steamid]
              (let [steamid (parse-long steamid)]
                (defroutes player-routes
+                          (POST "/make-movie" {{plays :plays} :body}
+                            (movie/make-movie steamid plays)
+                            (response "ok"))
                           (GET "/stats" req
                             (response (stats/get-stats-for-steamid
                                         steamid
@@ -157,6 +161,15 @@
                           (POST "/" {state :body}
                             (indexer/set-indexing-state (:running state))
                             (response "ok")))))
+           (POST "/movie" {{demoid :demoid steamid :steamid round :round} :body remote-addr :remote-addr}
+             (if (local-address? remote-addr)
+               (future (movie/record-round demoid (parse-long steamid) round)))
+             (response "ok"))
+           (POST "/gamestate_integration" {state :body}
+             (try
+               (movie/notify-record (and (= (get-in state [:player :activity]) "playing")
+                                         (not= (get-in state [:round :phase]) "freezetime")))
+               (catch Throwable e {})))
            (context "/config" []
              (GET "/" request
                (let [config (db/get-config)]
