@@ -32,6 +32,6 @@ deploy:
 notifications:
   email:
     recipients:
-      - bugdone@gmail.com
+      - hendranator@gmail.com
     on_success: never
     on_failure: always
